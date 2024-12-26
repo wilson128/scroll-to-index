@@ -87,6 +87,9 @@ abstract class AutoScrollController implements ScrollController {
   /// check if the state is created. that is, is the indexed widget is layout out.
   /// NOTE: state created doesn't mean it's in viewport. it could be a buffer range, depending on flutter's implementation.
   bool isIndexStateInLayoutRange(int index);
+
+  Future<double?> getScrollToIndexOffset(int index, {AutoScrollPosition? preferPosition});
+
 }
 
 class SimpleAutoScrollController extends ScrollController
@@ -208,6 +211,27 @@ mixin AutoScrollControllerMixin on ScrollController
         this,
         () => _scrollToIndex(index,
             duration: duration, preferPosition: preferPosition));
+  }
+
+  @override
+  Future<double?> getScrollToIndexOffset(int index, {AutoScrollPosition? preferPosition}) async {
+    // Wait for widget state to be ready
+    await _waitForWidgetStateBuild();
+    
+    if (!hasClients || !isIndexStateInLayoutRange(index)) {
+      return null;
+    }
+
+    // Calculate target offset based on preference
+    if (preferPosition != null) {
+      return _directionalOffsetToRevealInViewport(
+        index, 
+        _positionToAlignment(preferPosition)
+      );
+    } else {
+      final begin = _directionalOffsetToRevealInViewport(index, 0);
+      return begin > 0 ? begin : 0;
+    }
   }
 
   Future _scrollToIndex(int index,
