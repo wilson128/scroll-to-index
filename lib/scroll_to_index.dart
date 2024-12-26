@@ -240,7 +240,7 @@ mixin AutoScrollControllerMixin on ScrollController
 
       await _bringIntoViewportIfNeed(index, preferPosition,
           (double offset) async {
-        await animateTo(offset, duration: duration, curve: Curves.ease);
+        await animateTo(offset, duration: duration, curve: Curves.linear);
         await _waitForWidgetStateBuild();
         return null;
       });
@@ -286,7 +286,7 @@ mixin AutoScrollControllerMixin on ScrollController
         spentDuration += suggestedDuration ?? moveDuration;
         final oldOffset = offset;
         await animateTo(currentOffset,
-            duration: suggestedDuration ?? moveDuration, curve: Curves.ease);
+            duration: suggestedDuration ?? moveDuration, curve: Curves.linear);
         await _waitForWidgetStateBuild();
         if (!hasClients || offset == oldOffset) {
           // already scroll to begin or end
@@ -305,7 +305,7 @@ mixin AutoScrollControllerMixin on ScrollController
             final remaining = duration - spentDuration;
             await animateTo(finalOffset,
                 duration: remaining <= Duration.zero ? _millisecond : remaining,
-                curve: Curves.ease);
+                curve: Curves.linear);
             await _waitForWidgetStateBuild();
 
             // not sure why it doesn't scroll to the given offset, try more within 3 times
@@ -315,7 +315,7 @@ mixin AutoScrollControllerMixin on ScrollController
                   i < count && hasClients && offset != finalOffset;
                   i++) {
                 await animateTo(finalOffset,
-                    duration: _millisecond, curve: Curves.ease);
+                    duration: _millisecond, curve: Curves.linear);
                 await _waitForWidgetStateBuild();
               }
             }
